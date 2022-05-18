@@ -118,11 +118,12 @@ public class ViewAllContactFragment extends Fragment {
 
     private void EditExpense() {
         Contact c = contactTables.get(viewHolder1.getAdapterPosition());
+        this.mViewModel.deleteContact(c.getPhone_number());
         //ExpenseTable e = contactRep.editExpense(viewHolder1.getAdapterPosition());
         adapter.notifyItemRemoved(viewHolder1.getAdapterPosition());
         adapter.notifyItemRangeChanged(viewHolder1.getAdapterPosition(), mViewModel.getAllContacts().getValue().size());
         viewHolder1.itemView.setVisibility(View.GONE);
-        MSPV3.getMe().putString("editExp", "true");
+        MSPV3.getMe().putString("editCon", "true");
         MSPV3.getMe().putObject("contact", c);
         Navigation.findNavController(view).navigate(R.id.action_fragmentViewAllContact_to_fragment_add_contact);
     }

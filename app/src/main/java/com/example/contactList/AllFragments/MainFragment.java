@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import com.example.contactList.R;
 import com.example.contactList.MSPV3;
-import com.example.contactList.ViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 
@@ -83,7 +82,7 @@ public class MainFragment extends Fragment {
         buttonAddNote = view.findViewById(R.id.button_add_note);
         Iv_exit = view.findViewById(R.id.Iv_exit);
         info = view.findViewById(R.id.info);
-        viewAllTransaction = view.findViewById(R.id.viewAllTransaction);
+        viewAllTransaction = view.findViewById(R.id.viewAllContacts);
         name_text = view.findViewById(R.id.name_text);
 
     }
