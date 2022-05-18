@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,6 +48,8 @@ public class ViewAllContactFragment extends Fragment {
     private final AllContactsAdapter adapter = new AllContactsAdapter();
     private View view;
     private ViewModel mViewModel = App.viewModel;
+    private TextView deleteAll;
+    private MaterialDialog mDialogDeleteAll;
 
 
 
@@ -59,6 +62,13 @@ public class ViewAllContactFragment extends Fragment {
         activity = getActivity();
         activity.setTitle("All Contacts");
         addContactToView();
+        initMDialog(expenseView,adapter);
+        deleteAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDialogDeleteAll.show();
+            }
+        });
         mDialog = new MaterialDialog.Builder(activity)
                 .setTitle("Delete!")
                 .setMessage("Are you sure you want to delete this contact?")
@@ -73,6 +83,7 @@ public class ViewAllContactFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int which) {
                         dialogInterface.dismiss();
+                        addContactToView();
                     }
                 })
                 .build();
@@ -128,6 +139,28 @@ public class ViewAllContactFragment extends Fragment {
         Navigation.findNavController(view).navigate(R.id.action_fragmentViewAllContact_to_fragment_add_contact);
     }
 
+    private void initMDialog(RecyclerView recyclerView, AllContactsAdapter adapter) {
+        mDialogDeleteAll = new MaterialDialog.Builder(activity)
+                .setTitle("Delete?")
+                .setMessage("Are You Sure You Want To Delete All The Expenses?")
+                .setCancelable(false)
+                .setPositiveButton("Delete", R.drawable.ic_delete, new MaterialDialog.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int which) {
+                        mViewModel.deleteAllContact();
+                        dialogInterface.dismiss();
+                        Navigation.findNavController(view).navigate(R.id.action_fragmentViewAllContact_to_fragment_main);
+                    }
+                })
+                .setNegativeButton("Cancel", R.drawable.ic_close, new MaterialDialog.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int which) {
+                        dialogInterface.dismiss();
+                    }
+                })
+                .build();
+    }
+
 
     private void delete(DialogInterface dialogInterface) {
         Contact c = contactTables.get(viewHolder1.getAdapterPosition());
@@ -137,6 +170,7 @@ public class ViewAllContactFragment extends Fragment {
         adapter.notifyItemRangeChanged(viewHolder1.getAdapterPosition(), mViewModel.getAllContacts().getValue().size());
         viewHolder1.itemView.setVisibility(View.GONE);
         dialogInterface.dismiss();
+        addContactToView();
     }
 
     private void addContactToView() {
@@ -164,6 +198,7 @@ public class ViewAllContactFragment extends Fragment {
     private void initVeiw() {
         expenseView = view.findViewById(R.id.recycler_view2);
         back = view.findViewById(R.id.back_all);
+        deleteAll = view.findViewById(R.id.deleteAllContacts);
     }
 }
 

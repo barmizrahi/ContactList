@@ -25,6 +25,7 @@ public class Contact {
     @ColumnInfo(name = "user_name")
     public String user_name;
 
+
     public Contact(String phone_number ,String first_name , String last_name, String user_name)
     {
         this.last_name = last_name;
