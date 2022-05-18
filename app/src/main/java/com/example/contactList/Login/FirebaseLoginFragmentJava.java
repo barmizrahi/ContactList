@@ -10,24 +10,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
-
 import com.example.contactList.MSPV3;
 import com.example.contactList.R;
-import com.example.finalprojectexpensemanager.Repository.ExpenseRepository;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 
 public class FirebaseLoginFragmentJava extends Fragment {
@@ -39,7 +30,6 @@ public class FirebaseLoginFragmentJava extends Fragment {
     private ProgressBar progressBar;
     private Activity activity;
     private View view;
-    private boolean isCounterChange = false;
 
 
     public void onCreate(Bundle savedInstanceState) {
@@ -93,10 +83,7 @@ public class FirebaseLoginFragmentJava extends Fragment {
                 if (validateInput(email, pass)) {
                     progressBar.setVisibility(View.VISIBLE);
                     String[] mailToDataBase = email.split("@");
-                    ExpenseRepository.userName = mailToDataBase[0];
-                    FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    DatabaseReference myRef = database.getReference(getString(R.string.EXPENSE_TABLE_APP));
-                    editCounterAndCoin(myRef, mailToDataBase);
+                    MSPV3.getMe().putString("userName",mailToDataBase[0]);
                     getAuth().signInWithEmailAndPassword(email, pass).addOnCompleteListener((OnCompleteListener) (new OnCompleteListener() {
                         public final void onComplete(Task task) {
                             progressBar.setVisibility(View.INVISIBLE);
@@ -120,59 +107,6 @@ public class FirebaseLoginFragmentJava extends Fragment {
         }));
     }
 
-    private void editCounterAndCoin(DatabaseReference myRef, String[] mailToDataBase) {
-        try {
-            myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    for (DataSnapshot child : snapshot.getChildren()) {//users
-                        if (child.getKey().equals(mailToDataBase[0])) {//if enter then in the user
-                            for (DataSnapshot child1 : child.getChildren()) {//expneses
-                                handleDataFromDataBase(child1);
-                            }
-                            break;
-                        }
-
-                    }
-
-                    if (isCounterChange == false) {
-                        myRef.child(mailToDataBase[0]).child(getString(R.string.EXPENSE_TABLE)).child(getString(R.string.EXPENSES_COUNTER)).setValue("" + 0);
-                    }
-                    //Navigation.findNavController(view).navigate(R.id.action_firebaseLoginJavaFragment_to_fragment_main);
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
-
-        } catch (Exception e) {
-            myRef.child(mailToDataBase[0]).child(getString(R.string.EXPENSE_TABLE)).child(getString(R.string.EXPENSES_COUNTER)).setValue("" + 0);
-        }
-    }
-
-    private void handleDataFromDataBase(DataSnapshot child1) {
-        if (child1.getKey().equals(getString(R.string.EXPENSE_TABLE))) {
-            for (DataSnapshot child2 : child1.getChildren()) {//all keys until we arrive to counter
-                if (child2.getKey().equals(getString(R.string.EXPENSES_COUNTER))) {
-                    ExpenseRepository.counter = Integer.parseInt(child2.getValue(String.class));
-                    MSPV3.getMe().putString("MPCounter", child2.getValue(String.class));
-                    // also insert into MPV3
-                    isCounterChange = true;
-                }
-
-            }
-        } else if (child1.getKey().equals(getString(R.string.COIN))) {
-            ExpenseRepository.coin = child1.getValue(String.class);
-            MSPV3.getMe().putString("MPCoin", child1.getValue(String.class));
-            // also insert into MPV3
-        } else if (child1.getKey().equals(getString(R.string.BUDGETDB))) {
-            //pull from MPV3
-            ExpenseRepository.amount = Integer.parseInt(child1.getValue(String.class));
-            MSPV3.getMe().putString("MPAmount", "" + ExpenseRepository.amount);
-        }
-    }
 
     private FirebaseAuth getAuth() {
         return auth;

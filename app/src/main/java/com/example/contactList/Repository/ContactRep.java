@@ -1,34 +1,35 @@
 package com.example.contactList.Repository;
-
 import android.os.AsyncTask;
-import java.util.List;
-import android.arch.lifecycle.MutableLiveData;
-import android.app.Application;
-import android.arch.lifecycle.LiveData;
 
+import java.util.ArrayList;
+import java.util.List;
+import android.app.Application;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-
+import com.example.contactList.ContactDatabase;
 import com.example.contactList.DAO.ContactDao;
 import com.example.contactList.Entity.Contact;
+import com.example.contactList.MSPV3;
 
 public class ContactRep
 {
-    private static final String NAME = "name";
-    private static final String PHONE = "phone";
-    private static final String EMAIL = "email";
+    private static final String NAME = "first_name";
+    private static final String PHONE = "phone_number";
+    private static final String LASTNAME = "last_name";
+
 
     private MutableLiveData<List<Contact>> searchResults = new MutableLiveData<>();
     private LiveData<List<Contact>> allContacts;
     private ContactDao contactDao;
 
     //CONSTRUCTOR
-    public ContactRepository(Application application)
+    public ContactRep(Application application)
     {
-        ContactRoomDatabase db;
-        db = ContactRoomDatabase.getDatabase(application);
+        ContactDatabase db;
+        db = ContactDatabase.getDatabase(application);
         contactDao = db.contactDao();
-        allContacts = contactDao.getAllContacts();
+        String user_name = MSPV3.getMe().getString("userName","");
+        allContacts = contactDao.getAllContacts(user_name);
     }
 
     //ASYNC CALLS (insert, delete, find)
@@ -37,10 +38,10 @@ public class ContactRep
         InsertAsyncTask task = new InsertAsyncTask(contactDao);
         task.execute(newContact);
     }
-    public void deleteContact(String name)
+    public void deleteContact(String phone)
     {
         DeleteAsyncTask task = new DeleteAsyncTask(contactDao);
-        task.execute(name);
+        task.execute(phone);
     }
     public void findName(String name)
     {
@@ -54,11 +55,11 @@ public class ContactRep
         task.delegate = this;
         task.execute(phone);
     }
-    public void findEmail(String email)
-    {
-        QueryAsyncTask task = new QueryAsyncTask(contactDao, EMAIL);
-        task.delegate = this;
-        task.execute(email);
+
+    public void deleteAllContact(){
+        DeleteAllAsyncTask task = new DeleteAllAsyncTask(contactDao);
+        task.execute();
+
     }
 
     //GETTERS & SETTERS
@@ -72,7 +73,7 @@ public class ContactRep
     {
         private String criterion;
         private ContactDao asyncTaskDao;
-        private static ContactRepository delegate = null;
+        private static ContactRep delegate = null;
 
         //Constructor
         QueryAsyncTask(ContactDao dao, String criterion)
@@ -88,7 +89,7 @@ public class ContactRep
 
             else if (criterion == PHONE) return asyncTaskDao.findPhone(params[0]);
 
-            else return asyncTaskDao.findEmail(params[0]);
+            else return new ArrayList<Contact>();
         }
 
         @Override
@@ -122,4 +123,18 @@ public class ContactRep
             return null;
         }
     }
+
+    private static class DeleteAllAsyncTask extends AsyncTask<String, Void, Void>
+    {
+        private ContactDao asyncTaskDao;
+        DeleteAllAsyncTask(ContactDao dao) { asyncTaskDao = dao; }
+
+        @Override
+        protected Void doInBackground(final String... params)
+        {
+            asyncTaskDao.nukeTable();
+            return null;
+        }
+    }
+
 }

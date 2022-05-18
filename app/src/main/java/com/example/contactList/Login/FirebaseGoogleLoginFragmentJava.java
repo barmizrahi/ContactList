@@ -18,7 +18,6 @@ import androidx.navigation.Navigation;
 
 import com.example.contactList.MSPV3;
 import com.example.contactList.R;
-import com.example.finalprojectexpensemanager.Repository.ExpenseRepository;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -31,11 +30,8 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 
 public class FirebaseGoogleLoginFragmentJava extends Fragment {
@@ -84,9 +80,7 @@ public class FirebaseGoogleLoginFragmentJava extends Fragment {
         GoogleSignInOptions gso = (new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)).requestIdToken("268956387720-ubd2soa3eeje942mtm16f2to2vgb0tac.apps.googleusercontent.com").requestEmail().build();
         mGoogleSignInClient = GoogleSignIn.getClient((requireActivity()), gso);
         Context context = container.getContext();
-
         view = inflater.inflate(R.layout.fragment_firebase_google_login, container, false);
-
         activity = this.getActivity();
         buttonxyz = view.findViewById(R.id.buttonxyz);
         sign_in_button = view.findViewById(R.id.sign_in_button);
@@ -115,7 +109,6 @@ public class FirebaseGoogleLoginFragmentJava extends Fragment {
         }
     }
 
-
     private final void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, (String) null);
         auth.signInWithCredential(credential)
@@ -143,19 +136,10 @@ public class FirebaseGoogleLoginFragmentJava extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         String logIn = MSPV3.getMe().getString(getString(R.string.LogInBolean), "");
-
         if (logIn.equals("true")) {
             buttonxyz.setVisibility(View.GONE);
-            ExpenseRepository.userName = MSPV3.getMe().getString(getString(R.string.UserName), "");
-            FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference myRef = database.getReference(getString(R.string.EXPENSE_TABLE_APP));
-            editCounterAndCoin(myRef, ExpenseRepository.userName);
-
+            Navigation.findNavController(view).navigate(R.id.action_firebaseGoogleLoginJavaFragment_to_fragmentMain);
         }
-
-
-
-
         (buttonxyz).setOnClickListener((View.OnClickListener) (new View.OnClickListener() {
             public final void onClick(View it) {
                 Navigation.findNavController(view).navigate(R.id.action_firebaseGoogleLoginJavaFragment_to_firebaseLoginFragment);
@@ -166,42 +150,6 @@ public class FirebaseGoogleLoginFragmentJava extends Fragment {
                 signIn();
             }
         }));
-    }
-
-    private void editCounterAndCoin(DatabaseReference myRef, String mailToDataBase) {
-        try {
-            ExpenseRepository.counter = Integer.parseInt(MSPV3.getMe().getString("MPCounter", ""));
-        } catch (Exception e) {
-            myRef.child(mailToDataBase).child(getString(R.string.EXPENSE_TABLE)).child(getString(R.string.EXPENSES_COUNTER)).setValue("" + 0);
-            ExpenseRepository.counter = 0;
-            MSPV3.getMe().putString("MPCounter", "0");
-        }
-        ExpenseRepository.coin = MSPV3.getMe().getString("MPCoin", "");
-        ExpenseRepository.reset = Integer.parseInt(MSPV3.getMe().getString("MPReset", ""));
-        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot child : snapshot.getChildren()) {//users
-                    if (child.getKey().equals(mailToDataBase)) {//if enter then in the user
-                        for (DataSnapshot child1 : child.getChildren()) {//expneses
-                            if (child1.getKey().equals(getString(R.string.BUDGETDB))) {
-                                //pull from MPV3
-                                ExpenseRepository.amount = Integer.parseInt(child1.getValue(String.class));
-                                MSPV3.getMe().putString("MPAmount", "" + ExpenseRepository.amount);
-                            }
-                        }
-                    }
-
-                }
-                Navigation.findNavController(view).navigate(R.id.action_firebaseGoogleLoginJavaFragment_to_fragmentMain);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-
-            }
-        });
     }
 
 }

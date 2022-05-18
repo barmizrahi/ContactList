@@ -16,9 +16,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ContactDatabase db = Room.databaseBuilder(getApplicationContext(),
-                ContactDatabase.class, "database-name").build();
-        ContactDao userDao = db.contactDao();
-        List<Contact> users = userDao.getAll();
+    }
+    public void onBackPressed() {
+        //super.onBackPressed();
+        return;
     }
 }

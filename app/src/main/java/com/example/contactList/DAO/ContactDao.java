@@ -11,7 +11,7 @@ import java.util.List;
 @Dao
 public interface ContactDao {
     @Insert
-    void insertContact(Contact product);
+    void insertContact(Contact... product);
 
     @Query("SELECT * FROM contact_list WHERE first_name LIKE ('%'||:name||'%') ORDER BY first_name")
     List<Contact> findName(String name);
@@ -22,6 +22,9 @@ public interface ContactDao {
     @Query("DELETE FROM contact_list WHERE phone_number = :phone" )
     void deleteContact(String phone);
 
-    @Query("SELECT * FROM contact_list ORDER BY first_name")
-    LiveData<List<Contact>> getAllContacts();
+    @Query("SELECT * FROM contact_list WHERE user_name LIKE ('%'||:user||'%') ORDER BY first_name")
+    LiveData<List<Contact>> getAllContacts(String user);
+
+    @Query("DELETE FROM contact_list")
+    public void nukeTable();
 }

@@ -11,19 +11,17 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import com.example.contactList.MSPV3;
 import com.example.contactList.R;
-import com.example.finalprojectexpensemanager.Repository.ExpenseRepository;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+
 
 
 public class FirebaseRegisterFragmentJava extends Fragment {
@@ -100,10 +98,7 @@ public class FirebaseRegisterFragmentJava extends Fragment {
     private void handleUser(String email, Task task) {
         if (task.isSuccessful()) {
             String[] mailToDataBase = email.split("@");
-            ExpenseRepository.userName = mailToDataBase[0];
-            FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference myRef = database.getReference(getString(R.string.EXPENSE_TABLE_APP));
-            myRef.child(mailToDataBase[0]).child(getString(R.string.EXPENSE_TABLE)).child(getString(R.string.EXPENSES_COUNTER)).setValue("" + 0);
+            MSPV3.getMe().putString("userName",mailToDataBase[0]);
             Navigation.findNavController(view).navigate(R.id.action_firebaseRegisterFragment_to_loginFragment);
         } else {
             Context var3 = (Context) FirebaseRegisterFragmentJava.this.requireActivity();

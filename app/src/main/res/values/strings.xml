@@ -22,7 +22,8 @@
     <string name="transactions_on_this_date">Transactions On This Date</string>
     <string name="EXTRA_CATEGORY">Category</string>
     <string name="LogInBolean">LOG_IN</string>
-    <string name="UserName">USER_NAME</string>
+    <string name="first_name">USER_FIRST_NAME</string>
+    <string name="last_name">USER_LAST_NAME</string>
     <string name="infoLogIn">1) Enter Your First Name.\n\n2) Enter Your Last Name
     </string>
     <string name="infoMain">* Press On The + Button To Add Contact.\n\n* Press On The Exit Button To Exit From Your Account.

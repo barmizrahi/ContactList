@@ -2,6 +2,8 @@ package com.example.contactList;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
+import com.example.contactList.Entity.Contact;
 import com.google.gson.Gson;
 
 public class MSPV3 {
@@ -50,14 +52,14 @@ public class MSPV3 {
         sharedPreferences.edit().putString(KEY, value).apply();
     }
 
-    public void putObject(String KEY, ContactClass value) {
+    public void putObject(String KEY, Contact value) {
         sharedPreferences.edit().putString(KEY, new Gson().toJson(value)).apply();
     }
 
-    public ContactClass getObject(String KEY) {
-        ContactClass object = null;
+    public Contact getObject(String KEY) {
+        Contact object = null;
         try {
-            object = (ContactClass)new Gson().fromJson(sharedPreferences.getString(KEY, ""), ContactClass.class);
+            object = (Contact)new Gson().fromJson(sharedPreferences.getString(KEY, ""), Contact.class);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

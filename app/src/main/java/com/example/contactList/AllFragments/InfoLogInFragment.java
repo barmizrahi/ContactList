@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
-import com.example.finalprojectexpensemanager.R;
+import com.example.contactList.R;
 
 public class InfoLogInFragment extends Fragment {
     private View view;

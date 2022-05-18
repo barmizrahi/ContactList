@@ -9,20 +9,15 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Spinner;
-
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
-
 import com.example.contactList.MSPV3;
 import com.example.contactList.R;
-import com.example.finalprojectexpensemanager.Repository.ExpenseRepository;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 
-public class LoginFragment extends Fragment implements AdapterView.OnItemSelectedListener {
+
+public class LoginFragment extends Fragment {
     private TextInputLayout firstName;
     private TextInputLayout lastName;
     private Button continueButton;
@@ -56,11 +51,15 @@ public class LoginFragment extends Fragment implements AdapterView.OnItemSelecte
                 continueButton.setEnabled(false);
                 LoginFragment.this.lastName.setError("This Field Cannot Be Empty");
             }
-            else
+            else {
+                LoginFragment.this.lastName.setErrorEnabled(false);
                 lastnameGood = true;
+            }
 
             if (firstnameGood && lastnameGood) {
                 continueButton.setEnabled(true);
+                MSPV3.getMe().putString(getString(R.string.first_name),firstName);
+                MSPV3.getMe().putString(getString(R.string.last_name),lastName);
             }
 
         }
@@ -100,59 +99,10 @@ public class LoginFragment extends Fragment implements AdapterView.OnItemSelecte
             public final void onClick(View it) {
                 String name = firstName.getEditText().getText().toString();
                 String last = lastName.getEditText().getText().toString();
-                saveCredentials(name, last);
                 MSPV3.getMe().putString("Start", "true");
                 Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_fragment_main);
             }
         }));
     }
 
-    private void saveCredentials(String name, String last) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference(getString(R.string.EXPENSE_TABLE_APP));
-        myRef.child(ExpenseRepository.userName).child(getString(R.string.NAMEDB)).setValue(name);
-        myRef.child(ExpenseRepository.userName).child(getString(R.string.BUDGETDB)).setValue("" + budget);
-        MSPV3.getMe().putString("MPAmount", "" + budget);
-        myRef.child(ExpenseRepository.userName).child(getString(R.string.RESET)).setValue("" + budget);
-        myRef.child(ExpenseRepository.userName).child(getString(R.string.INCOMEDB)).setValue("" + income);
-        ExpenseRepository.reset = Integer.parseInt(budget);
-        MSPV3.getMe().putString("MPReset", budget);
-        //insert into MPV3
-        ExpenseRepository.amount = Integer.parseInt(budget);
-        ExpenseRepository.counter = 0;
-    }
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        String coin = parent.getItemAtPosition(position).toString();
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference(getString(R.string.EXPENSE_TABLE_APP));
-        switch (coin) {
-            case "NIS":
-                myRef.child(ExpenseRepository.userName).child(getString(R.string.COIN)).setValue("₪");
-                MSPV3.getMe().putString("MPCoin", "₪");
-                ExpenseRepository.coin = "₪";
-                //insert into MPV3
-                break;
-            case "Dollar":
-                myRef.child(ExpenseRepository.userName).child(getString(R.string.COIN)).setValue("$");
-                MSPV3.getMe().putString("MPCoin", "$");
-                ExpenseRepository.coin = "$";
-                //insert into MPV3
-                break;
-            case "Euro":
-                myRef.child(ExpenseRepository.userName).child(getString(R.string.COIN)).setValue("€");
-                MSPV3.getMe().putString("MPCoin", "€");
-                ExpenseRepository.coin = "€";
-                //insert into MPV3
-                break;
-
-        }
-
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }
 }
