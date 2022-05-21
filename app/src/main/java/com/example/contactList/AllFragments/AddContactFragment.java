@@ -25,6 +25,9 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textview.MaterialTextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class AddContactFragment extends Fragment {
     private TextInputEditText phoneNumber;
@@ -38,6 +41,7 @@ public class AddContactFragment extends Fragment {
     private Context context;
     public static String edit;
     private ViewModel viewModel = App.viewModel;
+    private Contact contacToEdit;
     //private ViewModel mViewModel;
 
 
@@ -70,17 +74,17 @@ public class AddContactFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        this.viewModel = ViewModelProviders.of(this).get(ViewModel.class);
+        //this.viewModel = ViewModelProviders.of(this).get(ViewModel.class);
     }
 
     private void EditExpense() {
         back_add.setVisibility(View.GONE);
-        Contact contact = MSPV3.getMe().getObject("contact");
+        contacToEdit = MSPV3.getMe().getObject("contact");
         title.setText("Edit Contact");
         activity.setTitle("Edit Contact");
-        phoneNumber.setText(contact.getPhone_number());
-        firstName.setText(contact.getFirst_name());
-        lastName.setText(contact.getLast_name());
+        phoneNumber.setText(contacToEdit.getPhone_number());
+        firstName.setText(contacToEdit.getFirst_name());
+        lastName.setText(contacToEdit.getLast_name());
         MSPV3.getMe().putString("editCon", "false");
     }
 
@@ -100,12 +104,29 @@ public class AddContactFragment extends Fragment {
         String phone = phoneNumber.getText().toString();
         String first = firstName.getText().toString();
         String last = lastName.getText().toString();
-        if (phone.trim().isEmpty() || first.trim().isEmpty() || last.trim().isEmpty() ) {
+        if (phone.trim().isEmpty() || first.trim().isEmpty() || last.trim().isEmpty()) {
             Toast.makeText(getContext(), "Please Fill All The Fields", Toast.LENGTH_SHORT).show();
             return;
         }
-        Contact contact = new Contact(phone, first, last,MSPV3.getMe().getString("userName",""));
-       // this.viewModel.deleteAllContact();
+
+        if(phone.length()!=10){
+            phoneNumber.setError("A Phone Number Must Have Exactly 10 Digits");
+            return;
+        }
+        List<Contact> l = new ArrayList<>();
+        l = MainFragment.allContactsInMain;
+        for(int i=0;i<l.size();i++){
+            if(l.get(i).phone_number.equals(phone)){
+                if(edit.equals("true")){
+                    if(l.get(i).getId()==contacToEdit.getId())
+                    break;
+                }
+                Toast.makeText(getContext(), "You Have Already Has This Contact In Your Contact List", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+        Contact contact = new Contact(phone, first, last, MSPV3.getMe().getString("userName", ""));
+        // this.viewModel.deleteAllContact();
         this.viewModel.insertContact(contact);
         Navigation.findNavController(view).navigate(R.id.action_fragment_add_contact_to_fragment_main);
     }

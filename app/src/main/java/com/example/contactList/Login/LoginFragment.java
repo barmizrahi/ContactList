@@ -9,12 +9,16 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
+
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+
+import com.example.contactList.App;
+import com.example.contactList.Entity.User;
 import com.example.contactList.MSPV3;
 import com.example.contactList.R;
+import com.example.contactList.ViewModel;
 import com.google.android.material.textfield.TextInputLayout;
-
 
 
 public class LoginFragment extends Fragment {
@@ -23,6 +27,7 @@ public class LoginFragment extends Fragment {
     private Button continueButton;
     private View view;
     private ImageView info;
+    private ViewModel viewModel = App.viewModel;
     private TextWatcher boardingTextWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -50,16 +55,15 @@ public class LoginFragment extends Fragment {
             if (lastName.isEmpty()) {
                 continueButton.setEnabled(false);
                 LoginFragment.this.lastName.setError("This Field Cannot Be Empty");
-            }
-            else {
+            } else {
                 LoginFragment.this.lastName.setErrorEnabled(false);
                 lastnameGood = true;
             }
 
             if (firstnameGood && lastnameGood) {
                 continueButton.setEnabled(true);
-                MSPV3.getMe().putString(getString(R.string.first_name),firstName);
-                MSPV3.getMe().putString(getString(R.string.last_name),lastName);
+
+
             }
 
         }
@@ -99,7 +103,11 @@ public class LoginFragment extends Fragment {
             public final void onClick(View it) {
                 String name = firstName.getEditText().getText().toString();
                 String last = lastName.getEditText().getText().toString();
+                MSPV3.getMe().putString(getString(R.string.first_name), name);
+                MSPV3.getMe().putString(getString(R.string.last_name), last);
                 MSPV3.getMe().putString("Start", "true");
+                User user = new User(MSPV3.getMe().getString("userName", ""), name, last);
+                viewModel.insertUser(user);
                 Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_fragment_main);
             }
         }));

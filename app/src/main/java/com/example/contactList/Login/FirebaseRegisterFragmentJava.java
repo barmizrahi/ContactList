@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -21,7 +22,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
 
 
 public class FirebaseRegisterFragmentJava extends Fragment {
@@ -98,7 +98,7 @@ public class FirebaseRegisterFragmentJava extends Fragment {
     private void handleUser(String email, Task task) {
         if (task.isSuccessful()) {
             String[] mailToDataBase = email.split("@");
-            MSPV3.getMe().putString("userName",mailToDataBase[0]);
+            MSPV3.getMe().putString("userName", mailToDataBase[0]);
             Navigation.findNavController(view).navigate(R.id.action_firebaseRegisterFragment_to_loginFragment);
         } else {
             Context var3 = (Context) FirebaseRegisterFragmentJava.this.requireActivity();

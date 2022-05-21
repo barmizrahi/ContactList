@@ -26,8 +26,7 @@ public class Contact {
     public String user_name;
 
 
-    public Contact(String phone_number ,String first_name , String last_name, String user_name)
-    {
+    public Contact(String phone_number, String first_name, String last_name, String user_name) {
         this.last_name = last_name;
         this.first_name = first_name;
         this.phone_number = phone_number;
@@ -78,5 +77,16 @@ public class Contact {
     public Contact setUser_name(String user_name) {
         this.user_name = user_name;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "Contact{" +
+                "id=" + id +
+                ", phone_number='" + phone_number + '\'' +
+                ", first_name='" + first_name + '\'' +
+                ", last_name='" + last_name + '\'' +
+                ", user_name='" + user_name + '\'' +
+                '}';
     }
 }

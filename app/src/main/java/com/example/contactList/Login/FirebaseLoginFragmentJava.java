@@ -10,10 +10,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+
+import com.example.contactList.App;
+import com.example.contactList.Entity.User;
 import com.example.contactList.MSPV3;
 import com.example.contactList.R;
+import com.example.contactList.ViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
@@ -30,6 +35,7 @@ public class FirebaseLoginFragmentJava extends Fragment {
     private ProgressBar progressBar;
     private Activity activity;
     private View view;
+    private ViewModel viewModel = App.viewModel;
 
 
     public void onCreate(Bundle savedInstanceState) {
@@ -83,14 +89,16 @@ public class FirebaseLoginFragmentJava extends Fragment {
                 if (validateInput(email, pass)) {
                     progressBar.setVisibility(View.VISIBLE);
                     String[] mailToDataBase = email.split("@");
-                    MSPV3.getMe().putString("userName",mailToDataBase[0]);
+                    MSPV3.getMe().putString("userName", mailToDataBase[0]);
                     getAuth().signInWithEmailAndPassword(email, pass).addOnCompleteListener((OnCompleteListener) (new OnCompleteListener() {
                         public final void onComplete(Task task) {
                             progressBar.setVisibility(View.INVISIBLE);
                             if (task.isSuccessful()) {
                                 MSPV3.getMe().putString("Start", "true");
+                                User user = viewModel.getUser();
+                                MSPV3.getMe().putString(getString(R.string.first_name), user.getFirstName());
+                                MSPV3.getMe().putString(getString(R.string.last_name), user.getLastName());
                                 Navigation.findNavController(view).navigate(R.id.action_firebaseLoginJavaFragment_to_fragment_main);
-                                // Navigation.findNavController(view).navigate(R.id.action_firebaseLoginJavaFragment_to_fragment_main);
                             } else {
                                 Context var3 = (Context) FirebaseLoginFragmentJava.this.requireActivity();
                                 StringBuilder var10001 = (new StringBuilder()).append("Authentication failed: ");

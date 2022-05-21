@@ -3,6 +3,7 @@ package com.example.contactList.AllFragments;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -30,15 +30,14 @@ import com.example.contactList.ViewModel;
 
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import dev.shreyaspatil.MaterialDialog.MaterialDialog;
 import dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface;
 
 public class ViewAllContactFragment extends Fragment {
-    private RecyclerView expenseView;
-    private ContactRep contactRep;
+    private RecyclerView contactView;
+    //private ContactRep contactRep;
     private ImageButton back;
     private Activity activity;
     private List<Contact> contactTables = new ArrayList<>();
@@ -52,7 +51,6 @@ public class ViewAllContactFragment extends Fragment {
     private MaterialDialog mDialogDeleteAll;
 
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_view_all_contact, container, false);
@@ -62,7 +60,7 @@ public class ViewAllContactFragment extends Fragment {
         activity = getActivity();
         activity.setTitle("All Contacts");
         addContactToView();
-        initMDialog(expenseView,adapter);
+        initMDialog(contactView, adapter);
         deleteAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,6 +74,7 @@ public class ViewAllContactFragment extends Fragment {
                 .setPositiveButton("Yes", R.drawable.ic_delete, new MaterialDialog.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int which) {
+                        Log.e("g","delteing");
                         delete(dialogInterface);
                     }
                 })
@@ -110,7 +109,7 @@ public class ViewAllContactFragment extends Fragment {
             }
 
 
-        }).attachToRecyclerView(expenseView);
+        }).attachToRecyclerView(contactView);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -131,8 +130,8 @@ public class ViewAllContactFragment extends Fragment {
         Contact c = contactTables.get(viewHolder1.getAdapterPosition());
         this.mViewModel.deleteContact(c.getPhone_number());
         //ExpenseTable e = contactRep.editExpense(viewHolder1.getAdapterPosition());
-        adapter.notifyItemRemoved(viewHolder1.getAdapterPosition());
-        adapter.notifyItemRangeChanged(viewHolder1.getAdapterPosition(), mViewModel.getAllContacts().getValue().size());
+        //adapter.notifyItemRemoved(viewHolder1.getAdapterPosition());
+        //adapter.notifyItemRangeChanged(viewHolder1.getAdapterPosition(), mViewModel.getAllContacts().getValue().size());
         viewHolder1.itemView.setVisibility(View.GONE);
         MSPV3.getMe().putString("editCon", "true");
         MSPV3.getMe().putObject("contact", c);
@@ -142,7 +141,7 @@ public class ViewAllContactFragment extends Fragment {
     private void initMDialog(RecyclerView recyclerView, AllContactsAdapter adapter) {
         mDialogDeleteAll = new MaterialDialog.Builder(activity)
                 .setTitle("Delete?")
-                .setMessage("Are You Sure You Want To Delete All The Expenses?")
+                .setMessage("Are You Sure You Want To Delete All The Contacts?")
                 .setCancelable(false)
                 .setPositiveButton("Delete", R.drawable.ic_delete, new MaterialDialog.OnClickListener() {
                     @Override
@@ -164,31 +163,29 @@ public class ViewAllContactFragment extends Fragment {
 
     private void delete(DialogInterface dialogInterface) {
         Contact c = contactTables.get(viewHolder1.getAdapterPosition());
-       // ExpenseTable e = contactRep.myDelete(viewHolder1.getAdapterPosition());
+        // ExpenseTable e = contactRep.myDelete(viewHolder1.getAdapterPosition());
         this.mViewModel.deleteContact(c.getPhone_number());
-        adapter.notifyItemRemoved(viewHolder1.getAdapterPosition());
-        adapter.notifyItemRangeChanged(viewHolder1.getAdapterPosition(), mViewModel.getAllContacts().getValue().size());
-        viewHolder1.itemView.setVisibility(View.GONE);
+       // adapter.notifyItemRemoved(viewHolder1.getAdapterPosition());
+       // adapter.notifyItemRangeChanged(viewHolder1.getAdapterPosition(), mViewModel.getAllContacts().getValue().size());
+        //viewHolder1.itemView.setVisibility(View.GONE);
         dialogInterface.dismiss();
         addContactToView();
     }
 
     private void addContactToView() {
-        expenseView.setLayoutManager(new LinearLayoutManager(context));
-        expenseView.setAdapter(adapter);
-        expenseView.setAdapter(adapter);
-        adapter.setOnClickListener(new AllContactsAdapter.OnItemClickListner()
-        {
-            public void onItemClick(String name)
-            {
-                mViewModel.deleteContact(name);
+        contactView.setLayoutManager(new LinearLayoutManager(context));
+        contactView.setAdapter(adapter);
+        adapter.setOnClickListener(new AllContactsAdapter.OnItemClickListner() {
+            public void onItemClick(String name) {
+                // mViewModel.deleteContact(name);
             }
         });
         mViewModel.getAllContacts().observe(getViewLifecycleOwner(), new Observer<List<Contact>>() {
             @Override
             public void onChanged(List<Contact> contacts) {
                 contactTables = contacts;
-                if(contactTables!=null){
+
+                if (contactTables != null) {
                     adapter.setNotes(contacts);
                 }
             }
@@ -196,7 +193,7 @@ public class ViewAllContactFragment extends Fragment {
     }
 
     private void initVeiw() {
-        expenseView = view.findViewById(R.id.recycler_view2);
+        contactView = view.findViewById(R.id.recycler_view2);
         back = view.findViewById(R.id.back_all);
         deleteAll = view.findViewById(R.id.deleteAllContacts);
     }
