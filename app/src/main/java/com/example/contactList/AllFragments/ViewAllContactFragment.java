@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -19,25 +18,19 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.contactList.Adapters.AllContactsAdapter;
 import com.example.contactList.App;
 import com.example.contactList.Entity.Contact;
 import com.example.contactList.MSPV3;
 import com.example.contactList.R;
-import com.example.contactList.Repository.ContactRep;
 import com.example.contactList.ViewModel;
-
-
 import java.util.ArrayList;
 import java.util.List;
-
 import dev.shreyaspatil.MaterialDialog.MaterialDialog;
 import dev.shreyaspatil.MaterialDialog.interfaces.DialogInterface;
 
 public class ViewAllContactFragment extends Fragment {
     private RecyclerView contactView;
-    //private ContactRep contactRep;
     private ImageButton back;
     private Activity activity;
     private List<Contact> contactTables = new ArrayList<>();
@@ -53,6 +46,7 @@ public class ViewAllContactFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        //a callback method that the system call when its time for the UI to appear at the first time
         view = inflater.inflate(R.layout.fragment_view_all_contact, container, false);
         this.mViewModel = ViewModelProviders.of(this).get(ViewModel.class);
         context = container.getContext();
@@ -129,9 +123,6 @@ public class ViewAllContactFragment extends Fragment {
     private void EditExpense() {
         Contact c = contactTables.get(viewHolder1.getAdapterPosition());
         this.mViewModel.deleteContact(c.getPhone_number());
-        //ExpenseTable e = contactRep.editExpense(viewHolder1.getAdapterPosition());
-        //adapter.notifyItemRemoved(viewHolder1.getAdapterPosition());
-        //adapter.notifyItemRangeChanged(viewHolder1.getAdapterPosition(), mViewModel.getAllContacts().getValue().size());
         viewHolder1.itemView.setVisibility(View.GONE);
         MSPV3.getMe().putString("editCon", "true");
         MSPV3.getMe().putObject("contact", c);
@@ -163,11 +154,7 @@ public class ViewAllContactFragment extends Fragment {
 
     private void delete(DialogInterface dialogInterface) {
         Contact c = contactTables.get(viewHolder1.getAdapterPosition());
-        // ExpenseTable e = contactRep.myDelete(viewHolder1.getAdapterPosition());
         this.mViewModel.deleteContact(c.getPhone_number());
-       // adapter.notifyItemRemoved(viewHolder1.getAdapterPosition());
-       // adapter.notifyItemRangeChanged(viewHolder1.getAdapterPosition(), mViewModel.getAllContacts().getValue().size());
-        //viewHolder1.itemView.setVisibility(View.GONE);
         dialogInterface.dismiss();
         addContactToView();
     }
@@ -177,14 +164,13 @@ public class ViewAllContactFragment extends Fragment {
         contactView.setAdapter(adapter);
         adapter.setOnClickListener(new AllContactsAdapter.OnItemClickListner() {
             public void onItemClick(String name) {
-                // mViewModel.deleteContact(name);
+
             }
         });
         mViewModel.getAllContacts().observe(getViewLifecycleOwner(), new Observer<List<Contact>>() {
             @Override
             public void onChanged(List<Contact> contacts) {
                 contactTables = contacts;
-
                 if (contactTables != null) {
                     adapter.setNotes(contacts);
                 }

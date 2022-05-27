@@ -47,12 +47,12 @@ public class MainFragment extends Fragment {
 
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        //a callback method that the system call when its time for the UI to appear at the first time
         MSPV3.getMe().putString(getString(R.string.LogInBolean), "true");
         context = container.getContext();
         view = inflater.inflate(R.layout.fragment_main, container, false);
         initView(view);
         editName();
-
         editLastItems();
        // recyclerView.setHasFixedSize(true);
 

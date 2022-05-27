@@ -47,10 +47,9 @@ public class AddContactFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        //a callback method that the system call when its time for the UI to appear at the first time
         view = inflater.inflate(R.layout.fragment_add_contact, container, false);
-
         initView();
-
         context = container.getContext();
         save.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,7 +63,7 @@ public class AddContactFragment extends Fragment {
                 Navigation.findNavController(view).navigate(R.id.action_fragment_add_contact_to_fragment_main);
             }
         });
-        edit = MSPV3.getMe().getString("editCon", "");
+        edit = MSPV3.getMe().getString("editCon", ""); // if we in the page of add but need to edit
         if (edit.equals("true")) {
             EditExpense();
         }
@@ -101,6 +100,7 @@ public class AddContactFragment extends Fragment {
     }
 
     private void saveNote() {
+        //get all the data from the TextInputEditText
         String phone = phoneNumber.getText().toString();
         String first = firstName.getText().toString();
         String last = lastName.getText().toString();
@@ -116,17 +116,19 @@ public class AddContactFragment extends Fragment {
         List<Contact> l = new ArrayList<>();
         l = MainFragment.allContactsInMain;
         for(int i=0;i<l.size();i++){
-            if(l.get(i).phone_number.equals(phone)){
-                if(edit.equals("true")){
-                    if(l.get(i).getId()==contacToEdit.getId())
+            if(l.get(i).phone_number.equals(phone)){//if there is alredy contact with the same phone number
+                if(edit.equals("true")){//if we edit then maybe we dont edit the phone number
+                    if(l.get(i).getId()==contacToEdit.getId())//if it is the contact we want to edit then break
                     break;
                 }
+                //else, im not editing im trying to add a cotnact with the same phone number
                 Toast.makeText(getContext(), "You Have Already Has This Contact In Your Contact List", Toast.LENGTH_SHORT).show();
                 return;
             }
         }
+        //all good and we create a new contact
         Contact contact = new Contact(phone, first, last, MSPV3.getMe().getString("userName", ""));
-        // this.viewModel.deleteAllContact();
+        //insert to the dateBase
         this.viewModel.insertContact(contact);
         Navigation.findNavController(view).navigate(R.id.action_fragment_add_contact_to_fragment_main);
     }
